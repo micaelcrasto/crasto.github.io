@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Influentes — Blank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<!-- SVG filters for grain and glow -->
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+      <feBlend in="SourceGraphic" in2="grayNoise" mode="overlay" result="blended"/>
+      <feComposite in="blended" in2="SourceGraphic" operator="in"/>
+    </filter>
+    <filter id="soft-glow">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+</svg>
+
+<style>
+/* ─── RESET ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ─── TYPE + TOKENS ─── */
+:root {
+  --black:  #0D0D0B;
+  --black2: #161613;
+  --black3: #1E1E1A;
+  --white:  #F2EFE9;
+  --white2: #E8E4DC;
+  --white3: #CEC9BE;
+  --mid:    #7A7568;
+  --rule:   rgba(242,239,233,0.09);
+  --rule2:  rgba(242,239,233,0.05);
+
+  --display: 'Libre Caslon Display', 'Libre Caslon Text', Georgia, serif;
+  --serif:   'Libre Caslon Text', Georgia, serif;
+  --sans:    'Airbnb Cereal App', 'Airbnb Cereal', ui-sans-serif, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:99;
+  height: 56px; padding: 0 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(13,13,11,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav-brand {
+  display: flex; align-items: center;
+}
+.nav-brand svg { height: 18px; width: auto; }
+.nav-brand svg path { fill: var(--white); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-a {
+  font-size: 12px; font-weight: 400;
+  color: rgba(242,239,233,0.3);
+  text-decoration: none; letter-spacing: .5px;
+  transition: color .2s;
+}
+.nav-a:hover { color: var(--white); }
+.nav-cta {
+  font-size: 12px; font-weight: 500; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--black); background: var(--white);
+  padding: 10px 24px; text-decoration: none;
+  border: none; cursor: pointer; transition: opacity .2s;
+}
+.nav-cta:hover { opacity: .85; }
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  height: 100vh; min-height: 680px;
+  overflow: hidden;
+  display: flex; align-items: center;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Echo KV */
+.echo-canvas {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+}
+.echo-canvas canvas,
+.echo-svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+
+/* Grain overlay */
+.grain-overlay {
+  position: absolute; inset: -50%;
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  opacity: 1;
+  pointer-events: none;
+  z-index: 2;
+  animation: grainShift 0.15s steps(1) infinite;
+}
+@keyframes grainShift {
+  0%  { transform: translate(0, 0); }
+  10% { transform: translate(-2%, -3%); }
+  20% { transform: translate(3%, 2%); }
+  30% { transform: translate(-1%, 4%); }
+  40% { transform: translate(4%, -1%); }
+  50% { transform: translate(-3%, 1%); }
+  60% { transform: translate(1%, -4%); }
+  70% { transform: translate(-4%, 2%); }
+  80% { transform: translate(2%, 3%); }
+  90% { transform: translate(3%, -2%); }
+}
+
+/* Hero content */
+.hero-content {
+  position: relative; z-index: 3;
+  padding: 0 52px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: end;
+  padding-bottom: 80px;
+  width: 100%;
+  align-self: flex-end;
+}
+
+.hero-left {}
+.hero-kicker {
+  font-family: var(--sans);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(242,239,233,0.3);
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.hero-kicker::before {
+  content: ''; width: 28px; height: 1px;
+  background: rgba(242,239,233,0.2); flex-shrink: 0;
+}
+h1.hero-headline {
+  font-family: var(--display);
+  font-size: clamp(64px, 9vw, 130px);
+  font-weight: 400; /* Display weight */
+  line-height: .92;
+  letter-spacing: -3px;
+  color: var(--white);
+  margin-bottom: 0;
+}
+h1.hero-headline em {
+  font-style: italic;
+  color: rgba(242,239,233,0.35);
+}
+
+.hero-right {
+  padding-left: 64px;
+  border-left: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  gap: 36px;
+  padding-bottom: 4px;
+}
+.hero-desc {
+  font-size: 15px; font-weight: 300;
+  color: rgba(242,239,233,0.45);
+  line-height: 1.85; max-width: 380px;
+}
+.hero-actions {
+  display: flex; flex-direction: column; gap: 14px;
+}
+.btn-primary {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 12px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--black); background: var(--white);
+  padding: 16px 32px; text-decoration: none;
+  border: none; cursor: pointer; transition: opacity .2s;
+  text-align: center;
+}
+.btn-primary:hover { opacity: .85; }
+.btn-ghost {
+  font-size: 12px; color: rgba(242,239,233,0.3);
+  text-decoration: none; letter-spacing: .5px;
+  transition: color .2s; display: flex;
+  align-items: center; gap: 8px;
+}
+.btn-ghost:hover { color: var(--white); }
+
+/* scroll indicator */
+.hero-scroll {
+  position: absolute; bottom: 28px; right: 52px;
+  z-index: 4;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(242,239,233,0.2);
+}
+.hero-scroll-line {
+  width: 32px; height: 1px; background: rgba(242,239,233,0.12);
+}
+
+/* ─── SECTION SHARED ─── */
+.s { padding: 100px 52px; border-bottom: 1px solid var(--rule); }
+.s-dark { background: var(--black); }
+.s-mid { background: var(--black2); }
+.s-lift { background: var(--black3); }
+
+.eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 4px;
+  text-transform: uppercase; color: rgba(242,239,233,0.25);
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px;
+}
+.eyebrow::before {
+  content: ''; width: 24px; height: 1px;
+  background: rgba(242,239,233,0.15); flex-shrink: 0;
+}
+
+.display {
+  font-family: var(--display);
+  font-size: clamp(42px, 5.5vw, 76px);
+  font-weight: 400; line-height: .97;
+  letter-spacing: -2.5px;
+  color: var(--white);
+}
+.display em { font-style: italic; color: rgba(242,239,233,0.35); }
+.display strong { font-weight: 400; }
+
+.body-text {
+  font-size: 15px; font-weight: 300;
+  color: rgba(242,239,233,0.45); line-height: 1.85;
+}
+
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+.three-col {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px; background: var(--rule);
+}
+
+/* ─── CANAL ─── */
+.canal-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+  margin-top: 64px;
+}
+.canal-statement {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 400; line-height: 1.2;
+  color: var(--white); letter-spacing: -.5px;
+  margin-bottom: 32px;
+}
+.canal-statement em { font-style: italic; color: rgba(242,239,233,0.4); }
+.canal-list { display: flex; flex-direction: column; gap: 0; }
+.canal-item {
+  display: grid; grid-template-columns: 48px 1fr;
+  gap: 16px; padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.canal-item:last-child { border-bottom: none; }
+.canal-icon {
+  font-family: var(--serif);
+  font-size: 22px; color: rgba(242,239,233,0.2);
+  line-height: 1; padding-top: 2px;
+}
+.canal-item-title {
+  font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 6px;
+}
+.canal-item-body { font-size: 13px; font-weight: 300; color: rgba(242,239,233,0.4); line-height: 1.75; }
+
+.quote-block {
+  border-left: 1px solid rgba(242,239,233,0.15);
+  padding: 32px 0 32px 32px;
+  margin-top: 40px;
+}
+.quote-text {
+  font-family: var(--serif);
+  font-size: 17px; font-style: italic; font-weight: 400;
+  color: rgba(242,239,233,0.6); line-height: 1.65;
+  margin-bottom: 16px;
+}
+.quote-attr { font-size: 12px; color: rgba(242,239,233,0.25); letter-spacing: .5px; }
+
+/* ─── WHAT ─── */
+.not-list { display: flex; flex-direction: column; gap: 0; margin: 32px 0; }
+.not-item {
+  display: flex; gap: 16px; align-items: baseline;
+  padding: 14px 0; border-bottom: 1px solid var(--rule2);
+  font-size: 14px; font-weight: 300;
+}
+.not-item:last-child { border-bottom: none; }
+.not-x { color: rgba(242,239,233,0.15); flex-shrink: 0; }
+.not-text { color: rgba(242,239,233,0.25); text-decoration: line-through; text-decoration-color: rgba(242,239,233,0.1); }
+.yes-block {
+  border: 1px solid rgba(242,239,233,0.12);
+  padding: 28px 24px;
+  border-top: 2px solid rgba(242,239,233,0.5);
+  margin-top: 8px;
+}
+.yes-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(242,239,233,0.3); margin-bottom: 12px;
+}
+.yes-text {
+  font-family: var(--serif); font-size: 16px; font-weight: 400;
+  color: rgba(242,239,233,0.75); line-height: 1.65;
+}
+
+.specs-block {
+  border: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+  margin-top: 80px;
+}
+.spec-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 20px; padding: 16px 22px; border-bottom: 1px solid var(--rule);
+  font-size: 13px;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-k { color: rgba(242,239,233,0.3); font-weight: 300; }
+.spec-v { font-weight: 500; color: var(--white); text-align: right; }
+
+/* ─── PROGRAM STRUCTURE ─── */
+.track-legend {
+  display: flex; gap: 28px; align-items: center; margin-bottom: 40px;
+}
+.tleg { display: flex; align-items: center; gap: 9px; font-size: 12px; color: rgba(242,239,233,0.3); }
+.tleg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.tleg-dot.ind { background: rgba(242,239,233,0.7); }
+.tleg-dot.col { background: rgba(242,239,233,0.35); }
+.tleg-dot.adv { background: rgba(242,239,233,0.15); }
+
+/* Month navigation */
+.month-nav {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 0; border: 1px solid var(--rule);
+  margin-bottom: 0;
+}
+.m-btn {
+  padding: 22px 28px;
+  cursor: pointer;
+  background: transparent;
+  border: none; border-right: 1px solid var(--rule);
+  border-bottom: 3px solid transparent;
+  color: inherit; text-align: left;
+  transition: background .2s, border-color .2s;
+}
+.m-btn:last-child { border-right: none; }
+.m-btn:hover { background: rgba(242,239,233,0.02); }
+.m-btn.active {
+  background: rgba(242,239,233,0.04);
+  border-bottom-color: var(--white);
+}
+.m-btn-n {
+  font-size: 10px; font-weight: 500; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(242,239,233,0.2);
+  margin-bottom: 8px;
+}
+.m-btn.active .m-btn-n { color: rgba(242,239,233,0.5); }
+.m-btn-name {
+  font-family: var(--serif);
+  font-size: 17px; font-style: italic;
+  color: rgba(242,239,233,0.3); line-height: 1;
+}
+.m-btn.active .m-btn-name { color: var(--white); }
+.m-btn-verb {
+  font-size: 11px; color: rgba(242,239,233,0.18); margin-top: 4px; letter-spacing: .2px;
+}
+.m-btn.active .m-btn-verb { color: rgba(242,239,233,0.35); }
+
+/* Month panel */
+.m-panel {
+  display: none;
+  border: 1px solid var(--rule); border-top: none;
+  background: rgba(242,239,233,0.02);
+  grid-template-columns: 1fr 1fr;
+}
+.m-panel.active { display: grid; }
+
+.mp-left {
+  padding: 48px 44px;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 28px;
+}
+.mp-title {
+  font-family: var(--display);
+  font-size: clamp(30px, 3.5vw, 46px);
+  font-weight: 400; line-height: .97; letter-spacing: -1.5px;
+  color: var(--white);
+}
+.mp-title em { font-style: italic; color: rgba(242,239,233,0.35); }
+.mp-lead {
+  font-size: 14px; font-weight: 300;
+  color: rgba(242,239,233,0.45); line-height: 1.85;
+}
+
+/* Week cycle */
+.cycle-wrap {}
+.cycle-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(242,239,233,0.2);
+  margin-bottom: 12px;
+}
+.cycle {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+}
+.cw {
+  padding: 14px 12px;
+  background: rgba(242,239,233,0.03);
+  border: 1px solid rgba(242,239,233,0.04);
+  border-top: 2px solid transparent;
+}
+.cw.on {
+  background: rgba(242,239,233,0.06);
+  border-top-color: rgba(242,239,233,0.5);
+}
+.cw.special {
+  background: rgba(242,239,233,0.04);
+  border-top-color: rgba(242,239,233,0.2);
+}
+.cw-n {
+  font-size: 9px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(242,239,233,0.15);
+  margin-bottom: 6px;
+}
+.cw.on .cw-n { color: rgba(242,239,233,0.4); }
+.cw.special .cw-n { color: rgba(242,239,233,0.25); }
+.cw-l { font-size: 11px; color: rgba(242,239,233,0.2); line-height: 1.4; }
+.cw.on .cw-l { color: rgba(242,239,233,0.7); font-weight: 500; }
+.cw.special .cw-l { color: rgba(242,239,233,0.4); }
+
+.mp-right {
+  padding: 48px 44px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.mp-item {
+  display: grid; grid-template-columns: 8px 1fr;
+  gap: 16px; padding: 18px 0;
+  border-bottom: 1px solid var(--rule2);
+  align-items: start;
+}
+.mp-item:last-child { border-bottom: none; }
+.mp-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  margin-top: 5px; flex-shrink: 0;
+}
+.mp-item.ind .mp-dot { background: rgba(242,239,233,0.65); }
+.mp-item.col .mp-dot { background: rgba(242,239,233,0.3); }
+.mp-item.adv .mp-dot { background: rgba(242,239,233,0.15); }
+.mp-track {
+  font-size: 9px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.mp-item.ind .mp-track { color: rgba(242,239,233,0.35); }
+.mp-item.col .mp-track { color: rgba(242,239,233,0.2); }
+.mp-item.adv .mp-track { color: rgba(242,239,233,0.15); }
+.mp-item-title {
+  font-size: 13px; font-weight: 500; color: rgba(242,239,233,0.8); margin-bottom: 4px; line-height: 1.3;
+}
+.mp-item-desc {
+  font-size: 12px; font-weight: 300; color: rgba(242,239,233,0.35); line-height: 1.65;
+}
+
+/* Pillars grid */
+.pillars-header {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-bottom: 56px;
+}
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.p-card {
+  background: var(--black);
+  padding: 26px 22px 30px;
+  position: relative;
+  transition: background .2s;
+}
+.p-card:hover { background: var(--black2); }
+.p-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.p-card.ind .p-bar { background: rgba(242,239,233,0.6); }
+.p-card.col .p-bar { background: rgba(242,239,233,0.3); }
+.p-card.adv .p-bar { background: rgba(242,239,233,0.12); }
+.p-num {
+  font-family: var(--serif); font-size: 11px; font-style: italic;
+  color: rgba(242,239,233,0.1); margin-bottom: 12px;
+}
+.p-title {
+  font-size: 13px; font-weight: 500; color: rgba(242,239,233,0.75);
+  line-height: 1.25; margin-bottom: 8px;
+}
+.p-body { font-size: 12px; font-weight: 300; color: rgba(242,239,233,0.3); line-height: 1.65; }
+.p-when {
+  margin-top: 14px;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+}
+.p-card.ind .p-when { color: rgba(242,239,233,0.2); }
+.p-card.col .p-when { color: rgba(242,239,233,0.12); }
+.p-card.adv .p-when { color: rgba(242,239,233,0.08); }
+
+/* ─── FACULTY ─── */
+.fac-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 56px;
+}
+.fac-card {
+  background: var(--black);
+  padding: 40px 32px;
+  transition: background .2s;
+}
+.fac-card:hover { background: var(--black2); }
+.fac-letter {
+  font-family: var(--display);
+  font-size: 72px; font-weight: 400;
+  color: rgba(242,239,233,0.06); line-height: 1;
+  margin-bottom: 20px; display: block;
+}
+.fac-name { font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--white); margin-bottom: 4px; }
+.fac-role { font-size: 12px; color: rgba(242,239,233,0.3); margin-bottom: 18px; line-height: 1.5; }
+.fac-bio { font-size: 13px; font-weight: 300; color: rgba(242,239,233,0.4); line-height: 1.8; }
+.fac-freq { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 11px; color: rgba(242,239,233,0.15); }
+
+/* ─── PROOF ─── */
+.proof-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 56px;
+}
+.proof-card {
+  background: var(--black);
+  padding: 44px 40px;
+  position: relative; overflow: hidden;
+  transition: background .2s;
+}
+.proof-card:hover { background: var(--black2); }
+.proof-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: transparent; transition: background .3s;
+}
+.proof-card:hover::before { background: rgba(242,239,233,0.4); }
+.proof-num {
+  font-family: var(--display);
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 400; color: var(--white);
+  line-height: 1; margin-bottom: 16px;
+  letter-spacing: -1.5px;
+}
+.proof-body { font-size: 14px; font-weight: 300; color: rgba(242,239,233,0.4); line-height: 1.8; margin-bottom: 32px; }
+.proof-rule { height: 1px; background: var(--rule); margin-bottom: 16px; }
+.proof-who { font-family: var(--serif); font-size: 15px; color: var(--white); }
+.proof-role { font-size: 12px; color: rgba(242,239,233,0.25); margin-top: 3px; }
+
+/* ─── INVEST ─── */
+.invest-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 56px;
+}
+.inv {
+  background: var(--black); padding: 48px 40px;
+}
+.inv.main {
+  background: var(--black2);
+  border-top: 2px solid var(--white);
+}
+.inv-pre { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(242,239,233,0.2); margin-bottom: 24px; }
+.inv.main .inv-pre { color: rgba(242,239,233,0.35); }
+.inv-price { font-family: var(--display); font-size: 52px; font-weight: 400; color: var(--white); line-height: 1; margin-bottom: 6px; letter-spacing: -2px; }
+.inv-period { font-size: 13px; color: rgba(242,239,233,0.25); margin-bottom: 36px; }
+.inv-items { display: flex; flex-direction: column; gap: 11px; margin-bottom: 36px; }
+.inv-item { display: flex; gap: 12px; font-size: 13px; font-weight: 300; color: rgba(242,239,233,0.4); line-height: 1.5; }
+.inv.main .inv-item { color: rgba(242,239,233,0.65); }
+.inv-check { flex-shrink: 0; color: rgba(242,239,233,0.25); margin-top: 2px; }
+.inv.main .inv-check { color: rgba(242,239,233,0.5); }
+.btn-inv {
+  display: block; width: 100%; padding: 16px;
+  text-align: center; font-family: var(--sans);
+  font-size: 12px; font-weight: 500; letter-spacing: 1.5px;
+  text-transform: uppercase; text-decoration: none;
+  border: 1px solid rgba(242,239,233,0.12);
+  color: rgba(242,239,233,0.3);
+  background: transparent; cursor: pointer; transition: all .2s;
+}
+.btn-inv:hover { border-color: rgba(242,239,233,0.3); color: rgba(242,239,233,0.65); }
+.inv.main .btn-inv { background: var(--white); color: var(--black); border-color: transparent; }
+.inv.main .btn-inv:hover { opacity: .88; }
+.inv-note { font-size: 11px; color: rgba(242,239,233,0.15); text-align: center; margin-top: 12px; line-height: 1.6; }
+
+/* ─── FAQ ─── */
+.faq-layout { display: grid; grid-template-columns: 280px 1fr; gap: 80px; }
+.faq-side-title { font-family: var(--display); font-size: 38px; font-weight: 400; color: var(--white); letter-spacing: -1.5px; line-height: 1.0; margin-bottom: 16px; }
+.faq-side-title em { font-style: italic; color: rgba(242,239,233,0.35); }
+.faq-side-body { font-size: 13px; color: rgba(242,239,233,0.3); line-height: 1.8; }
+.faq-list { border-top: 1px solid var(--rule); }
+.faq-item { border-bottom: 1px solid var(--rule); }
+.faq-q {
+  width: 100%; background: none; border: none;
+  color: rgba(242,239,233,0.65); text-align: left;
+  font-family: var(--sans); font-size: 14px; font-weight: 400;
+  padding: 20px 0; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  transition: color .2s;
+}
+.faq-q:hover { color: var(--white); }
+.faq-plus { font-size: 16px; color: rgba(242,239,233,0.2); flex-shrink: 0; transition: all .2s; }
+.faq-a { font-size: 13px; font-weight: 300; color: rgba(242,239,233,0.35); line-height: 1.85; padding-bottom: 20px; display: none; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-plus { transform: rotate(45deg); color: rgba(242,239,233,0.5); }
+
+/* ─── CLOSE ─── */
+.close-section {
+  padding: 120px 52px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+  background: var(--black2);
+  position: relative; overflow: hidden;
+}
+.close-echo {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .4;
+}
+.close-left { position: relative; z-index: 1; }
+.close-title {
+  font-family: var(--display);
+  font-size: clamp(48px, 6.5vw, 88px);
+  font-weight: 400; line-height: .93;
+  letter-spacing: -3px; color: var(--white); margin-bottom: 28px;
+}
+.close-title em { font-style: italic; color: rgba(242,239,233,0.35); }
+.close-sub { font-size: 14px; color: rgba(242,239,233,0.3); line-height: 1.8; }
+.close-right { position: relative; z-index: 1; }
+.close-card {
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--white);
+}
+.close-card-inner { padding: 40px 36px; }
+.close-card-label { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(242,239,233,0.2); margin-bottom: 24px; }
+.close-specs { display: flex; flex-direction: column; gap: 0; }
+.close-spec { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule2); font-size: 13px; }
+.close-spec:last-child { border-bottom: none; }
+.close-spec-k { color: rgba(242,239,233,0.25); font-weight: 300; }
+.close-spec-v { font-weight: 500; color: rgba(242,239,233,0.75); }
+.close-card-foot { padding: 28px 36px; border-top: 1px solid var(--rule); background: rgba(242,239,233,0.02); }
+.btn-close { display: block; width: 100%; padding: 18px; text-align: center; font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; background: var(--white); color: var(--black); border: none; cursor: pointer; transition: opacity .2s; margin-bottom: 12px; }
+.btn-close:hover { opacity: .88; }
+.close-terms { font-size: 11px; color: rgba(242,239,233,0.15); text-align: center; }
+
+/* ─── FOOTER ─── */
+footer { padding: 24px 52px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--rule); }
+.f-brand svg { height: 14px; width: auto; }
+.f-brand svg path { fill: rgba(242,239,233,0.15); }
+.f-copy { font-size: 11px; color: rgba(242,239,233,0.12); }
+
+/* ─── REVEAL ─── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ─── INVEST SINGLE ─── */
+.invest-single { margin-top: 56px; }
+.inv-main-card {
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--white);
+  background: var(--black2);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+}
+.inv-main-left {
+  padding: 48px 40px;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+}
+.inv-main-right {
+  padding: 48px 44px;
+  display: flex; flex-direction: column;
+  justify-content: space-between; gap: 32px;
+}
+.inv-items-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.btn-inv-main {
+  display: block; width: 100%; padding: 16px;
+  text-align: center; font-family: var(--sans);
+  font-size: 12px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase; text-decoration: none;
+  background: var(--white); color: var(--black);
+  border: none; cursor: pointer; transition: opacity .2s;
+  margin-bottom: 12px;
+}
+.btn-inv-main:hover { opacity: .88; }
+.inv-membership-note {
+  font-size: 12px; font-weight: 300;
+  color: rgba(242,239,233,0.2);
+  line-height: 1.75;
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+}
+@media(max-width:960px){
+  .inv-main-card { grid-template-columns: 1fr; }
+  .inv-main-left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .inv-items-two-col { grid-template-columns: 1fr; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width: 960px) {
+  nav { padding: 0 24px; }
+  .nav-links .nav-a { display: none; }
+  .hero-content { grid-template-columns: 1fr; padding: 0 24px 60px; }
+  .hero-right { border-left: none; border-top: 1px solid var(--rule); padding: 40px 0 0; }
+  .s { padding: 72px 24px; }
+  .two-col, .canal-grid, .pillars-header, .fac-grid, .proof-grid, .invest-grid, .close-section { grid-template-columns: 1fr; gap: 48px; }
+  .pillars-grid { grid-template-columns: 1fr 1fr; }
+  .month-nav { grid-template-columns: 1fr 1fr; }
+  .m-panel.active { grid-template-columns: 1fr; }
+  .mp-left { border-right: none; border-bottom: 1px solid var(--rule); }
+  .faq-layout { grid-template-columns: 1fr; }
+  .hero-scroll { display: none; }
+  footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════ NAV ═════ -->
+<nav>
+  <div class="nav-brand">
+    <!-- Blank wordmark SVG (scaled down) -->
+    <svg viewBox="0 0 2851 709" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M308.864 54.5113C308.864 49.5075 301.908 48.2814 300.185 52.9869C285.113 93.9116 270.869 141.563 207.268 201.807C204.684 204.259 200.344 201.608 200.344 198.062V15.5748C200.344 10.8693 193.52 9.11306 191.897 13.5203C167.848 78.0389 100.934 166.383 4.27322 196.406C1.98754 197.102 0 198.46 0 200.879V654.066C0 659.07 6.9564 660.296 8.67894 655.591C23.7511 614.666 57.44 535.567 101.597 506.771C104.578 504.815 108.52 506.969 108.52 510.515V693.003C108.52 697.708 115.211 699.398 116.967 695.057C144.958 625.237 197.297 551.672 304.591 512.172C306.844 511.344 308.864 510.117 308.864 507.698V54.5113Z" fill="currentColor"/>
+      <path d="M452.828 692.771V678.091C487.246 676.401 511.56 670.502 525.738 660.362C539.916 650.222 547.005 629.644 547.005 598.594V93.1824C547.005 62.7954 539.816 42.5484 525.506 32.4084C511.163 22.2683 486.948 16.3699 452.861 14.6798V0H735.854C811.447 0 870.775 14.5142 913.806 43.5425C956.836 72.5709 978.335 112.767 978.335 164.063C978.335 206.612 963.826 242.466 934.807 271.694C905.789 300.888 865.442 319.875 813.832 328.657C880.316 336.08 932.555 355.829 970.517 387.906C1008.48 419.983 1027.46 459.649 1027.46 506.903C1027.46 564.297 1005.6 609.629 961.904 642.866C918.211 676.136 858.386 692.737 782.462 692.737H452.894L452.828 692.771ZM621.902 318.55H738.836C788.094 318.55 826.751 304.963 854.776 277.791C882.8 250.618 896.779 213.073 896.779 165.124C896.779 122.575 880.846 89.239 848.946 65.115C817.045 40.9909 773.088 28.8958 717.072 28.8958H621.902V318.55ZM714.058 663.908H770.239C823.571 663.908 865.906 649.659 897.309 621.127C928.679 592.596 944.381 554.521 944.381 506.936C944.381 459.351 926.327 418.724 890.22 390.193C854.113 361.662 803.994 347.413 739.863 347.413H621.902V596.573C621.902 619.205 628.891 636.072 642.904 647.207C656.916 658.341 680.634 663.908 714.024 663.908H714.058Z" fill="currentColor"/>
+      <path d="M1260.43 678.058V692.771H1046.8V678.058C1058.3 676.368 1067.57 674.545 1074.7 672.557C1081.72 670.469 1089.24 667.288 1097.22 662.881C1105.14 658.473 1110.97 652.475 1114.65 644.887C1117.43 639.22 1119.22 632.494 1119.91 624.806C1120.15 622.254 1120.24 619.603 1120.24 616.82V122.111C1120.24 119.228 1120.18 116.511 1119.91 113.96V92.2214C1119.91 81.1204 1117.93 71.7425 1114.08 64.154C1110.17 56.5655 1104.24 50.5676 1096.33 46.1604C1092.58 44.0727 1088.81 42.2502 1085.23 40.7921C1081.32 39.0358 1077.48 37.7435 1073.8 36.7825C1066.68 34.8605 1057.4 32.9386 1045.98 30.9503V16.2373H1186.56V616.786C1186.56 627.888 1188.48 637.265 1192.33 644.854C1196.23 652.442 1202.16 658.44 1210.08 662.847C1213.82 664.935 1217.6 666.758 1221.18 668.216C1225.09 669.972 1228.93 671.264 1232.61 672.225C1239.73 674.147 1249 676.069 1260.43 678.058Z" fill="currentColor"/>
+      <path d="M1712.4 675.738C1707.03 674.711 1702.36 673.65 1698.39 672.523C1691.3 670.469 1683.81 667.255 1675.86 662.881C1667.91 658.473 1662.08 652.475 1658.37 644.92C1654.66 637.298 1652.81 627.921 1652.81 616.819V345.358C1652.81 288.295 1636.71 243.096 1604.48 209.627C1572.25 176.225 1528.95 159.49 1474.62 159.49C1447.59 159.49 1422.15 163.467 1398.17 171.387C1374.22 179.34 1353.98 190.109 1337.45 203.828C1320.92 217.481 1307.4 233.354 1296.97 251.413C1286.5 269.473 1281.5 288.627 1282.03 308.874H1354.24C1351.79 310.199 1350.9 299.927 1351.63 289.654C1352.95 270.733 1357.59 253.866 1365.54 239.02C1373.49 224.174 1385.55 212.079 1401.75 202.801C1417.95 193.522 1436.36 188.883 1456.9 188.883C1497.45 188.883 1529.15 202.701 1552.1 230.404C1575.06 258.074 1586.52 296.414 1586.52 345.358V378.263L1497.45 395.959C1417.45 410.871 1360.64 431.681 1327.08 458.522C1293.49 485.33 1276.73 523.538 1276.73 573.211C1276.73 613.406 1289.19 645.947 1314.2 670.933C1339.17 695.952 1371.54 708.444 1411.39 708.444C1451.24 708.444 1484.79 696.184 1516.16 671.695C1547.57 647.24 1571.02 613.705 1586.52 571.189V692.737H1726.25V678.024L1712.4 675.738ZM1586.56 544.381C1571.35 578.513 1550.88 605.851 1525.07 626.396C1499.2 647.008 1471.97 657.313 1443.29 657.313C1414.6 657.313 1391.84 647.604 1373.92 628.186C1356.03 608.767 1347.12 584.08 1347.12 554.024C1347.12 518.932 1359.25 491.328 1383.56 471.181C1407.88 451.099 1446.83 435.856 1500.53 425.385L1586.59 407.689V544.414L1586.56 544.381Z" fill="currentColor"/>
+      <path d="M2219.99 616.82C2219.99 627.955 2221.84 637.332 2225.55 644.921C2229.26 652.509 2235.09 658.507 2243.01 662.915C2250.93 667.289 2258.44 670.503 2265.53 672.524C2272.62 674.546 2281.9 676.402 2293.36 678.092V692.771H2080.72V678.092C2091.86 676.07 2100.96 674.115 2108.05 672.259C2115.14 670.404 2122.56 667.289 2130.31 662.881C2138.07 658.507 2143.9 652.509 2147.77 644.888C2151.65 637.299 2153.6 627.921 2153.6 616.787V313.911C2153.6 264.272 2141.21 226.13 2116.4 199.455C2091.59 172.812 2056.91 159.458 2012.35 159.458C1976.91 159.458 1944.58 169.432 1915.39 189.348C1886.2 209.297 1856.06 240.181 1825.03 282.033V159.491H1710.57L1578.26 196.97V211.649H1605.09C1624.33 212.644 1638.15 217.316 1646.59 225.567C1655.01 233.852 1659.25 247.106 1659.25 265.332V616.787C1659.25 627.921 1657.3 637.299 1653.42 644.888C1649.55 652.509 1643.62 658.507 1635.7 662.881C1627.78 667.289 1620.26 670.404 1613.17 672.259C1606.08 674.115 1596.98 676.07 1585.84 678.092V692.771H1798.48V678.092C1787.02 676.402 1777.74 674.546 1770.65 672.524C1763.56 670.503 1756.04 667.289 1748.12 662.915C1740.2 658.507 1734.37 652.509 1730.66 644.921C1726.95 637.332 1725.1 627.955 1725.1 616.82V305.859C1754.78 271.098 1781.94 246.344 1806.59 231.664C1831.23 216.985 1857.9 209.628 1886.59 209.628C1917.96 209.628 1942.6 219.238 1960.49 238.491C1978.38 257.744 1987.32 284.419 1987.32 318.518V616.787C1987.32 627.921 1985.37 637.299 1981.66 644.888C1977.78 652.509 1971.95 658.507 1964.03 662.881C1956.11 667.289 1948.69 670.404 1941.77 672.259C1934.68 674.115 1925.61 676.07 1914.14 678.092V692.771H2126.78V678.092C2115.32 676.402 2106.04 674.546 2098.95 672.524C2091.86 670.503 2084.35 667.289 2076.43 662.915C2068.51 658.507 2062.68 652.509 2058.97 644.921C2055.26 637.332 2053.41 627.955 2053.41 616.82V313.911C2053.41 264.272 2041.02 226.13 2016.21 199.455C2054.79 218.376 2078.14 250.056 2086.17 294.492C2086.17 294.492 2087 305.827 2087 318.518V616.82H2219.99Z" fill="currentColor"/>
+      <path d="M2851 678.057V692.77H2706.67C2703.62 680.609 2695.08 663.046 2680.86 640.082L2528.55 403.58L2452.3 474.329V616.786C2452.3 627.887 2454.22 637.265 2458.13 644.854C2461.97 652.442 2467.87 658.44 2475.78 662.847C2483.7 667.255 2491.29 670.37 2498.31 672.192C2505.43 674.114 2514.71 676.036 2526.2 678.024V692.737H2313.6V678.024C2325.1 676.334 2334.37 674.512 2341.49 672.523C2348.52 670.436 2356.04 667.255 2364.02 662.847C2371.94 658.44 2377.77 652.442 2381.44 644.854C2385.31 637.265 2387.26 627.887 2387.26 616.786V92.1881C2387.26 81.0871 2385.27 71.7092 2381.42 64.1208C2377.51 56.5323 2371.58 50.5344 2363.66 46.1272C2359.92 44.0395 2356.14 42.2169 2352.57 40.7589C2348.66 39.0026 2344.82 37.7103 2341.14 36.7493C2334.02 34.8273 2324.74 32.9054 2313.31 30.9171V16.2041H2452.77V434.398L2659.61 240.445C2676.14 225.666 2681.57 213.504 2676.07 203.994C2670.47 194.55 2654.18 189.844 2627.14 189.844V175.131H2809.93V189.844C2789 189.844 2769.88 194.483 2752.46 203.762C2735.1 213.04 2712.41 230.868 2684.35 257.179L2577.59 357.519L2747.66 625.336C2759.48 642.932 2773.16 655.889 2788.67 664.107C2804.17 672.424 2825.1 677.063 2851.47 678.024L2851 678.057Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="nav-links">
+    <a href="#como-funciona" class="nav-a">O programa</a>
+    <a href="#conselheiros" class="nav-a">Conselheiros</a>
+    <a href="#investimento" class="nav-a">Investimento</a>
+    <a href="#investimento" class="nav-cta">Candidatar-se</a>
+  </div>
+</nav>
+
+<!-- ═════ HERO ═════ -->
+<section class="hero">
+  <!-- Grain texture -->
+  <div class="grain-overlay"></div>
+
+  <!-- Echo SVG -->
+  <svg class="echo-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Radial glow at source -->
+      <radialGradient id="sourceGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#F2EFE9" stop-opacity="0.18"/>
+        <stop offset="40%" stop-color="#F2EFE9" stop-opacity="0.06"/>
+        <stop offset="100%" stop-color="#F2EFE9" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Ring glow gradient -->
+      <radialGradient id="ringGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#0D0D0B" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#0D0D0B" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Mask for right-side only -->
+      <mask id="rightMask">
+        <rect x="0" y="0" width="1440" height="900" fill="white"/>
+      </mask>
+    </defs>
+
+    <!-- Source glow -->
+    <circle cx="220" cy="450" r="120" fill="url(#sourceGlow)" opacity="0.8">
+      <animate attributeName="r" values="100;130;100" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="220" cy="450" r="60" fill="#F2EFE9" opacity="0.04">
+      <animate attributeName="r" values="50;70;50" dur="4s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Concentric arcs / rings -->
+    <!-- Each arc: a circle with stroke, partial via clip, fading out -->
+    <g opacity="1" mask="url(#rightMask)">
+      <!-- Ring 1 — tightest, brightest -->
+      <circle cx="220" cy="450" r="130" fill="none" stroke="#F2EFE9" stroke-width="1.5" opacity="0.35">
+        <animate attributeName="r" values="130;260;430" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.35;0.12;0" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Ring 2 -->
+      <circle cx="220" cy="450" r="130" fill="none" stroke="#F2EFE9" stroke-width="1" opacity="0.28">
+        <animate attributeName="r" values="130;260;430" dur="4s" begin="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.28;0.09;0" dur="4s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Ring 3 -->
+      <circle cx="220" cy="450" r="130" fill="none" stroke="#F2EFE9" stroke-width="0.8" opacity="0.2">
+        <animate attributeName="r" values="130;260;430" dur="4s" begin="1.6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.2;0.06;0" dur="4s" begin="1.6s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Ring 4 -->
+      <circle cx="220" cy="450" r="130" fill="none" stroke="#F2EFE9" stroke-width="0.6" opacity="0.15">
+        <animate attributeName="r" values="130;260;430" dur="4s" begin="2.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.15;0.04;0" dur="4s" begin="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Ring 5 -->
+      <circle cx="220" cy="450" r="130" fill="none" stroke="#F2EFE9" stroke-width="0.5" opacity="0.1">
+        <animate attributeName="r" values="130;260;430" dur="4s" begin="3.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.1;0.03;0" dur="4s" begin="3.2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- Static background rings for texture -->
+    <g opacity="1">
+      <circle cx="220" cy="450" r="160" fill="none" stroke="#F2EFE9" stroke-width="0.4" opacity="0.05"/>
+      <circle cx="220" cy="450" r="250" fill="none" stroke="#F2EFE9" stroke-width="0.4" opacity="0.05"/>
+      <circle cx="220" cy="450" r="360" fill="none" stroke="#F2EFE9" stroke-width="0.3" opacity="0.04"/>
+      <circle cx="220" cy="450" r="490" fill="none" stroke="#F2EFE9" stroke-width="0.3" opacity="0.04"/>
+      <circle cx="220" cy="450" r="640" fill="none" stroke="#F2EFE9" stroke-width="0.3" opacity="0.03"/>
+      <circle cx="220" cy="450" r="810" fill="none" stroke="#F2EFE9" stroke-width="0.2" opacity="0.03"/>
+    </g>
+
+    <!-- Dot at source -->
+    <circle cx="220" cy="450" r="5" fill="#F2EFE9" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="220" cy="450" r="2" fill="#F2EFE9" opacity="1"/>
+
+    <!-- Subtle vignette on right -->
+    <defs>
+      <linearGradient id="fadeRight" x1="60%" y1="0" x2="100%" y2="0">
+        <stop offset="0%" stop-color="#0D0D0B" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#0D0D0B" stop-opacity="0.6"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="1440" height="900" fill="url(#fadeRight)"/>
+  </svg>
+
+  <!-- Content -->
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-kicker">Programa Executivo · Influentes</div>
+      <h1 class="hero-headline">
+        Marca pessoal<br>
+        <em>como canal</em><br>
+        de aquisição.
+      </h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-desc">
+        Em 4 meses, a Blank constrói o seu posicionamento, treina o seu time e instala a operação. No encerramento, a capacidade está dentro da empresa — não na agência.
+      </p>
+      <div class="hero-actions">
+        <a href="#investimento" class="btn-primary">Candidatura</a>
+        <a href="#como-funciona" class="btn-ghost">Como funciona →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    Rolar
+  </div>
+</section>
+
+<!-- ═════ CANAL DE AQUISIÇÃO ═════ -->
+<section class="s s-dark">
+  <div class="eyebrow">Por que isso importa</div>
+  <div class="canal-grid">
+    <div>
+      <h2 class="canal-statement">
+        Marca pessoal é um canal<br>
+        de aquisição. Com uma<br>
+        <em>vantagem sobre os outros:</em><br>
+        <em>melhora com o tempo.</em>
+      </h2>
+      <div class="quote-block">
+        <p class="quote-text">Mídia paga mantém o custo constante. Autoridade acumulada reduz esse custo a cada ciclo. São lógicas opostas — e a maioria das empresas só opera com uma delas.</p>
+      </div>
+    </div>
+    <div class="canal-list reveal">
+      <div class="canal-item">
+        <div class="canal-icon">↗</div>
+        <div>
+          <div class="canal-item-title">Qualidade de lead</div>
+          <p class="canal-item-body">Leads originados por autoridade chegam com intenção de compra mais alta. Ciclo de venda menor, ticket médio superior, menor pressão sobre o time comercial.</p>
+        </div>
+      </div>
+      <div class="canal-item">
+        <div class="canal-icon">◈</div>
+        <div>
+          <div class="canal-item-title">Recrutamento</div>
+          <p class="canal-item-body">Profissionais de alta performance escolhem onde trabalhar com base em quem está construindo o negócio. Posicionamento claro do fundador reduz o custo e o ciclo de contratação.</p>
+        </div>
+      </div>
+      <div class="canal-item">
+        <div class="canal-icon">⟳</div>
+        <div>
+          <div class="canal-item-title">Deal flow</div>
+          <p class="canal-item-body">Parcerias estratégicas, M&A e oportunidades relevantes circulam entre quem o mercado conhece e respeita. Posicionamento claro amplia o acesso a esse fluxo.</p>
+        </div>
+      </div>
+      <div class="canal-item">
+        <div class="canal-icon">∞</div>
+        <div>
+          <div class="canal-item-title">Acumulação</div>
+          <p class="canal-item-body">Diferente de mídia paga, autoridade construída não se deprecia quando o investimento para. É um ativo que permanece independente de empresa, cargo ou ciclo econômico.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ O QUE É ═════ -->
+<section class="s s-mid">
+  <div class="two-col">
+    <div>
+      <div class="eyebrow">O que é o Influentes</div>
+      <h2 class="display" style="margin-bottom:28px">
+        Não é mentoria.<br><em>Não é agência.</em>
+      </h2>
+      <p class="body-text" style="margin-bottom:32px">A maioria das soluções para esse problema entrega conteúdo ou ferramenta — e pressupõe que o empresário vai executar. O Influentes parte de outra lógica: o problema não é de esforço, é de infraestrutura. Posicionamento que não existe, time que não tem método, operação que depende da agência.</p>
+      <div class="not-list">
+        <div class="not-item"><span class="not-x">✕</span><span class="not-text">Mentoria onde o empresário aprende e executa sozinho</span></div>
+        <div class="not-item"><span class="not-x">✕</span><span class="not-text">Curso gravado para assistir quando sobrar tempo</span></div>
+        <div class="not-item"><span class="not-x">✕</span><span class="not-text">Agência que produz conteúdo sem transferir capacidade</span></div>
+      </div>
+      <div class="yes-block">
+        <div class="yes-label">O que é</div>
+        <div class="yes-text">Um programa executivo que constrói o posicionamento, treina o time e instala a operação. Ao fim dos 4 meses, a empresa executa de forma autônoma — sem depender da Blank para continuar.</div>
+      </div>
+    </div>
+    <div>
+      <div class="specs-block">
+        <div class="spec-row"><span class="spec-k">Duração</span><span class="spec-v">4 meses</span></div>
+        <div class="spec-row"><span class="spec-k">Vagas por turma</span><span class="spec-v">30 empresas</span></div>
+        <div class="spec-row"><span class="spec-k">Faturamento mínimo</span><span class="spec-v">R$ 10M / ano</span></div>
+        <div class="spec-row"><span class="spec-k">Entrada</span><span class="spec-v">Por candidatura</span></div>
+        <div class="spec-row"><span class="spec-k">Investimento</span><span class="spec-v">R$ 100.000</span></div>
+        <div class="spec-row"><span class="spec-k">Conselheiros</span><span class="spec-v">Rony · Renata · Erich</span></div>
+        <div class="spec-row"><span class="spec-k">Encontro presencial</span><span class="spec-v">1 evento — mês 3</span></div>
+        <div class="spec-row"><span class="spec-k">Internalização</span><span class="spec-v">Call de 3h — mês 4</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ PILARES ═════ -->
+<section class="s s-dark" id="como-funciona">
+  <div class="pillars-header">
+    <div>
+      <div class="eyebrow">Estrutura</div>
+      <h2 class="display">12 pilares.<br><em>Dois trilhos.</em></h2>
+    </div>
+    <p class="body-text" style="padding-top:60px">O programa tem duas dimensões que correm em paralelo: a trilha individual, de trabalho exclusivo com cada empresa, e a trilha coletiva, dentro do cohort. A separação é intencional — cada uma entrega o que a outra não consegue.</p>
+  </div>
+
+  <div class="track-legend">
+    <div class="tleg"><div class="tleg-dot ind"></div>Individual — 1:1</div>
+    <div class="tleg"><div class="tleg-dot col"></div>Coletiva — cohort</div>
+    <div class="tleg"><div class="tleg-dot adv"></div>Conselheiros</div>
+  </div>
+
+  <div class="pillars-grid reveal">
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">01</div><div class="p-title">Onboarding estruturado</div><p class="p-body">Mapeamento completo do negócio, histórico e objetivos de receita.</p><div class="p-when">Mês 1 · Sem 1</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">02</div><div class="p-title">Diagnóstico de marca pessoal</div><p class="p-body">Posicionamento atual, gaps de percepção e análise de mercado.</p><div class="p-when">Mês 1 · Sem 1</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">03</div><div class="p-title">Planejamento estratégico</div><p class="p-body">Posicionamento, funil, identidade, linhas editoriais e plano tático. Feito pela Blank.</p><div class="p-when">Mês 1 · Sem 2</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">04</div><div class="p-title">8 roteiros base escritos</div><p class="p-body">2 por linha editorial. O time não começa do zero.</p><div class="p-when">Mês 1 · Sem 3</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">05</div><div class="p-title">Ciclo quinzenal de mentorias</div><p class="p-body">Mentoria com o time + mentoria com o empresário. Meses 2 a 4.</p><div class="p-when">Meses 2–4</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">06</div><div class="p-title">Account manager dedicado</div><p class="p-body">Presente nos 4 meses para alinhamentos do dia a dia.</p><div class="p-when">Meses 1–4</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">07</div><div class="p-title">2 revisões 1:1</div><p class="p-body">Balanço individual com o consultor — meses 3 e 4.</p><div class="p-when">Meses 3 e 4</div></div>
+    <div class="p-card ind"><div class="p-bar"></div><div class="p-num">08</div><div class="p-title">Call de internalização — 3h</div><p class="p-body">Transferência total da inteligência do programa para o time.</p><div class="p-when">Mês 4 · Sem 4</div></div>
+    <div class="p-card col"><div class="p-bar"></div><div class="p-num">09</div><div class="p-title">Comunidade do cohort</div><p class="p-body">Feedback, co-criação e parcerias entre as 30 empresas da turma.</p><div class="p-when">Meses 1–4</div></div>
+    <div class="p-card col"><div class="p-bar"></div><div class="p-num">10</div><div class="p-title">Encontro presencial</div><p class="p-body">Um dia com toda a turma — análise coletiva e produção ao vivo.</p><div class="p-when">Mês 3</div></div>
+    <div class="p-card col"><div class="p-bar"></div><div class="p-num">11</div><div class="p-title">Plataforma de documentação</div><p class="p-body">Todo o projeto registrado — disponível para o time operar depois.</p><div class="p-when">Contínuo</div></div>
+    <div class="p-card adv"><div class="p-bar"></div><div class="p-num">12</div><div class="p-title">Mentorias com conselheiros</div><p class="p-body">Rony, Renata e Erich — um por mês, ao vivo com o cohort.</p><div class="p-when">Meses 2, 3 e 4</div></div>
+  </div>
+</section>
+
+<!-- ═════ JORNADA ═════ -->
+<section class="s s-mid">
+  <div class="eyebrow">A jornada</div>
+  <h2 class="display" style="margin-bottom:56px">
+    Quatro meses.<br>
+    <em>Cada fase com</em><br>
+    <em>um propósito.</em>
+  </h2>
+
+  <div class="month-nav">
+    <button class="m-btn active" data-m="1">
+      <div class="m-btn-n">Mês 01</div>
+      <div class="m-btn-name">A Fundação</div>
+      <div class="m-btn-verb">Construir antes de publicar</div>
+    </button>
+    <button class="m-btn" data-m="2">
+      <div class="m-btn-n">Mês 02</div>
+      <div class="m-btn-name">A Execução</div>
+      <div class="m-btn-verb">Publicar com suporte real</div>
+    </button>
+    <button class="m-btn" data-m="3">
+      <div class="m-btn-n">Mês 03</div>
+      <div class="m-btn-name">A Calibração</div>
+      <div class="m-btn-verb">Ajustar com dados reais</div>
+    </button>
+    <button class="m-btn" data-m="4">
+      <div class="m-btn-n">Mês 04</div>
+      <div class="m-btn-name">A Passagem</div>
+      <div class="m-btn-verb">A Blank sai. O método fica.</div>
+    </button>
+  </div>
+
+  <!-- Panel 1 -->
+  <div class="m-panel active" data-p="1">
+    <div class="mp-left">
+      <h3 class="mp-title">A Blank constrói.<br><em>Você valida.</em></h3>
+      <p class="mp-lead">O primeiro mês é quase todo da Blank — onboarding, diagnóstico de posicionamento e construção do plano estratégico. O empresário aparece para as sessões e valida o que foi produzido. O resultado é um plano completo com linhas editoriais, funil e tático para os 4 meses.</p>
+      <div>
+        <div class="cycle-label">Ritmo das 4 semanas</div>
+        <div class="cycle">
+          <div class="cw on"><div class="cw-n">Sem 1</div><div class="cw-l">Onboarding e diagnóstico</div></div>
+          <div class="cw on"><div class="cw-n">Sem 2</div><div class="cw-l">Planejamento estratégico</div></div>
+          <div class="cw on"><div class="cw-n">Sem 3</div><div class="cw-l">8 roteiros escritos</div></div>
+          <div class="cw on"><div class="cw-n">Sem 4</div><div class="cw-l">Treinamento do time</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mp-right">
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Onboarding e diagnóstico completo</div><div class="mp-item-desc">Negócio, posicionamento atual, histórico de comunicação e objetivos de receita.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Planejamento estratégico</div><div class="mp-item-desc">Posicionamento, funil, identidade, linhas editoriais e plano tático. Produzido pela Blank, validado por você.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">8 roteiros base escritos pela Blank</div><div class="mp-item-desc">2 por linha editorial. O time começa com os melhores formatos do método já aplicados ao seu posicionamento.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Treinamento do time</div><div class="mp-item-desc">Quem executa aprende o método e começa a operar com clareza do que fazer — e por quê.</div></div></div>
+      <div class="mp-item col"><div class="mp-dot"></div><div><div class="mp-track">Coletiva</div><div class="mp-item-title">Integração ao cohort</div><div class="mp-item-desc">Apresentação entre os 30 membros. Mapeamento de sinergias e oportunidades de colaboração.</div></div></div>
+    </div>
+  </div>
+
+  <!-- Panel 2 -->
+  <div class="m-panel" data-p="2">
+    <div class="mp-left">
+      <h3 class="mp-title">O time publica.<br><em>A Blank acompanha.</em></h3>
+      <p class="mp-lead">A partir do mês 2, o ritmo é quinzenal: mentorias alternadas entre o time e o empresário. O time cuida da execução; o empresário, da direção. Um account manager fica disponível entre as sessões para o que aparecer no dia a dia.</p>
+      <div>
+        <div class="cycle-label">Ciclo quinzenal</div>
+        <div class="cycle">
+          <div class="cw on"><div class="cw-n">Sem A</div><div class="cw-l">Mentoria com o time</div></div>
+          <div class="cw"><div class="cw-n">Sem B</div><div class="cw-l">Publicações</div></div>
+          <div class="cw on"><div class="cw-n">Sem C</div><div class="cw-l">Mentoria com empresário</div></div>
+          <div class="cw"><div class="cw-n">Sem D</div><div class="cw-l">Publicações</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mp-right">
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Mentoria quinzenal com o time</div><div class="mp-item-desc">Revisão do que foi publicado, ajuste de execução e direcionamento.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Mentoria quinzenal com o empresário</div><div class="mp-item-desc">Alinhamento estratégico — posicionamento e decisões que impactam a comunicação.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Account manager dedicado</div><div class="mp-item-desc">Presente nos 4 meses para alinhamentos entre as sessões formais.</div></div></div>
+      <div class="mp-item col"><div class="mp-dot"></div><div><div class="mp-track">Coletiva</div><div class="mp-item-title">Comunidade ativa do cohort</div><div class="mp-item-desc">Feedback entre pares, co-criação, propostas de parceria e análise cruzada de resultados.</div></div></div>
+      <div class="mp-item col"><div class="mp-dot"></div><div><div class="mp-track">Coletiva</div><div class="mp-item-title">Plataforma de documentação</div><div class="mp-item-desc">Toda a inteligência do projeto registrada e atualizada.</div></div></div>
+    </div>
+  </div>
+
+  <!-- Panel 3 -->
+  <div class="m-panel" data-p="3">
+    <div class="mp-left">
+      <h3 class="mp-title">Dois meses de dados.<br><em>O plano evolui.</em></h3>
+      <p class="mp-lead">Com dois meses publicados, as hipóteses do mês 1 se tornam evidência. O terceiro mês é de ajuste com base no que funcionou — e é quando o cohort se encontra presencialmente. Um dos conselheiros participa ao vivo com a turma.</p>
+      <div>
+        <div class="cycle-label">Ciclo do mês 3</div>
+        <div class="cycle">
+          <div class="cw on"><div class="cw-n">Sem A</div><div class="cw-l">Mentoria com o time</div></div>
+          <div class="cw special"><div class="cw-n">Sem B</div><div class="cw-l">Encontro presencial</div></div>
+          <div class="cw on"><div class="cw-n">Sem C</div><div class="cw-l">Revisão 1:1</div></div>
+          <div class="cw special"><div class="cw-n">Sem D</div><div class="cw-l">Sessão conselheiro</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mp-right">
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Ciclo quinzenal continua</div><div class="mp-item-desc">Com dados reais, ajustes de posicionamento e formato baseados em evidência.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Primeira revisão 1:1</div><div class="mp-item-desc">Call individual com o consultor — balanço e ajuste do plano para o último mês.</div></div></div>
+      <div class="mp-item col"><div class="mp-dot"></div><div><div class="mp-track">Coletiva</div><div class="mp-item-title">Encontro presencial do cohort</div><div class="mp-item-desc">Um dia com toda a turma. Análise coletiva, ajuste de rota e produção de conteúdo ao vivo.</div></div></div>
+      <div class="mp-item adv"><div class="mp-dot"></div><div><div class="mp-track">Conselheiro</div><div class="mp-item-title">Sessão ao vivo com conselheiro</div><div class="mp-item-desc">A operação real de quem construiu presença que gera negócio — ao vivo, para perguntas reais.</div></div></div>
+    </div>
+  </div>
+
+  <!-- Panel 4 -->
+  <div class="m-panel" data-p="4">
+    <div class="mp-left">
+      <h3 class="mp-title">A Blank sai.<br><em>O método fica.</em></h3>
+      <p class="mp-lead">O objetivo do quarto mês é garantir que tudo que foi construído nos três anteriores viva dentro da empresa sem a Blank. Uma sessão de 3 horas transfere o método, as decisões e a documentação para o time. Depois dela, a operação é autônoma.</p>
+      <div>
+        <div class="cycle-label">Ciclo do mês 4</div>
+        <div class="cycle">
+          <div class="cw on"><div class="cw-n">Sem A</div><div class="cw-l">Mentoria com o time</div></div>
+          <div class="cw special"><div class="cw-n">Sem B</div><div class="cw-l">Sessão conselheiro</div></div>
+          <div class="cw on"><div class="cw-n">Sem C</div><div class="cw-l">Revisão 1:1 final</div></div>
+          <div class="cw on"><div class="cw-n">Sem D</div><div class="cw-l" style="font-weight:600;opacity:.9">Internalização 3h</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mp-right">
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Call de internalização — 3 horas</div><div class="mp-item-desc">Transferência estruturada de toda a inteligência do programa para o time interno.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Segunda revisão 1:1</div><div class="mp-item-desc">Balanço final e plano de operação autônoma para os meses seguintes.</div></div></div>
+      <div class="mp-item ind"><div class="mp-dot"></div><div><div class="mp-track">Individual</div><div class="mp-item-title">Documentação completa entregue</div><div class="mp-item-desc">Diagnóstico, plano, roteiros e decisões dos 4 meses. Dentro da empresa para sempre.</div></div></div>
+      <div class="mp-item adv"><div class="mp-dot"></div><div><div class="mp-track">Conselheiro</div><div class="mp-item-title">Segunda sessão com conselheiro</div><div class="mp-item-desc">Em 4 meses, contato com dois dos três. Um nível de acesso que não existe em lugar nenhum.</div></div></div>
+      <div class="mp-item col"><div class="mp-dot"></div><div><div class="mp-track">Coletiva</div><div class="mp-item-title">Apresentação final do cohort</div><div class="mp-item-desc">Cada empresa apresenta o que construiu. Encerramento de um ciclo — e início de uma rede que permanece.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ CONSELHEIROS ═════ -->
+<section class="s s-dark" id="conselheiros">
+  <div class="two-col" style="align-items:end;margin-bottom:56px">
+    <div>
+      <div class="eyebrow">Conselheiros</div>
+      <h2 class="display">Três nomes.<br><em>Um por mês.</em></h2>
+    </div>
+    <p class="body-text">Todo mês do programa, um conselheiro está ao vivo com o cohort. Não é palestra — é conversa aberta. Os empresários fazem perguntas sobre como cada um deles construiu presença que gera negócio de verdade. Em 4 meses, o participante tem acesso a dois dos três.</p>
+  </div>
+  <div class="fac-grid reveal">
+    <div class="fac-card">
+      <span class="fac-letter">R</span>
+      <div class="fac-name">Rony Meisler</div>
+      <div class="fac-role">Fundador, Reserva + Rebels Ventures · Investidor Blank</div>
+      <p class="fac-bio">Fundou a Reserva, referência em moda premium no Brasil. Construiu posicionamento pessoal de forma deliberada e passou a utilizá-lo como vetor de capital e negócios. Entrou no programa como cliente, avaliou o método por dentro e tornou-se investidor da Blank.</p>
+      <div class="fac-freq">1 sessão por trimestre · Ao vivo com o cohort</div>
+    </div>
+    <div class="fac-card">
+      <span class="fac-letter">R</span>
+      <div class="fac-name">Renata Vichi</div>
+      <div class="fac-role">Ex-CEO, Kopenhagen e Brasil Cacau · Exit Nestlé</div>
+      <p class="fac-bio">Dirigiu duas das marcas mais reconhecidas do varejo brasileiro. Construiu autoridade que transcendeu os cargos ocupados e sobreviveu à aquisição pela Nestlé — referência de como posicionamento executivo opera independente da empresa.</p>
+      <div class="fac-freq">1 sessão por trimestre · Ao vivo com o cohort</div>
+    </div>
+    <div class="fac-card">
+      <span class="fac-letter">E</span>
+      <div class="fac-name">Erich Shibata</div>
+      <div class="fac-role">Diretor de Branding, CIMED</div>
+      <p class="fac-bio">Responsável pelas redes de João Adibe e Karla Marques, dois dos casos mais estudados de presença executiva no Brasil. Opera a estrutura de conteúdo institucional da CIMED. Visão de dentro de como uma operação desse porte é construída e mantida.</p>
+      <div class="fac-freq">1 sessão por trimestre · Ao vivo com o cohort</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ PROVA ═════ -->
+<section class="s s-mid">
+  <div class="two-col" style="align-items:end;margin-bottom:56px">
+    <div>
+      <div class="eyebrow">Resultados</div>
+      <h2 class="display">O que<br><em>aconteceu.</em></h2>
+    </div>
+    <p class="body-text">A Blank tem 34 milhões de seguidores sob gestão. Os casos abaixo mostram o que acontece quando posicionamento consistente encontra um negócio com substância — e alguém disposto a executar.</p>
+  </div>
+  <div class="proof-grid reveal">
+    <div class="proof-card">
+      <div class="proof-num">200M de alcance</div>
+      <p class="proof-body">Alcance orgânico mensal atribuído à marca pessoal do fundador, com receita direta gerada pelo canal. A presença virou o principal vetor de aquisição da G4 — sem depender de verba para escalar.</p>
+      <div class="proof-rule"></div>
+      <div class="proof-who">Tallis Gomes</div>
+      <div class="proof-role">Fundador — G4 Educação</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-num">Cliente → Sócio</div>
+      <p class="proof-body">Entrou como cliente, viu o método funcionar por dentro e decidiu investir na Blank. Quando alguém que poderia escolher qualquer coisa decide entrar como sócio, o argumento se resume a isso.</p>
+      <div class="proof-rule"></div>
+      <div class="proof-who">Rony Meisler</div>
+      <div class="proof-role">Fundador — Reserva · Rebels Ventures</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-num">Zero → referência setorial</div>
+      <p class="proof-body">Posicionamento construído do zero no setor de moda e varejo premium. Em alguns meses, presença reconhecida que funciona independente da empresa — e que permanece quando o cargo muda.</p>
+      <div class="proof-rule"></div>
+      <div class="proof-who">Sandra Chayo</div>
+      <div class="proof-role">Sócia Diretora — HOPE</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-num">Autoridade pós-exit</div>
+      <p class="proof-body">Construiu autoridade que sobreviveu à aquisição pela Nestlé. O posicionamento pertence ao fundador — não ao cargo, não à empresa. Esse é o ativo que o programa instala.</p>
+      <div class="proof-rule"></div>
+      <div class="proof-who">Renata Vichi</div>
+      <div class="proof-role">Ex-CEO — Kopenhagen / Brasil Cacau</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ INVESTIMENTO ═════ -->
+<section class="s s-dark" id="investimento">
+  <div class="two-col" style="align-items:end;margin-bottom:56px">
+    <div>
+      <div class="eyebrow">Investimento</div>
+      <h2 class="display">O programa.<br><em>R$ 100.000.</em></h2>
+    </div>
+    <p class="body-text">O Influentes tem início, meio e fim definidos. Ao encerramento, a empresa opera de forma autônoma. Para quem quiser continuar com acesso à comunidade, capacitações e mentorias, existe o Membership pós-programa — uma opção, não uma obrigação.</p>
+  </div>
+  <div class="invest-single reveal">
+    <div class="inv-main-card">
+      <div class="inv-main-left">
+        <div class="inv-pre">Programa Influentes</div>
+        <div class="inv-price">R$ 100.000</div>
+        <div class="inv-period">pagamento único · por empresa</div>
+        <div style="margin-top:32px">
+          <a href="#" class="btn-inv-main">Candidatura</a>
+          <div class="inv-note">Por candidatura · R$10M+ de faturamento · 30 vagas por turma</div>
+        </div>
+      </div>
+      <div class="inv-main-right">
+        <div class="inv-items-two-col">
+          <div class="inv-item"><div class="inv-check">✓</div>Onboarding e diagnóstico completo</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Planejamento estratégico</div>
+          <div class="inv-item"><div class="inv-check">✓</div>8 roteiros base escritos pela Blank</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Ciclo quinzenal — time e empresário</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Account manager dedicado — 4 meses</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Sessões com Rony, Renata e Erich</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Comunidade ativa do cohort</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Encontro presencial — mês 3</div>
+          <div class="inv-item"><div class="inv-check">✓</div>2 revisões 1:1 com consultor</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Call de internalização de 3h</div>
+          <div class="inv-item"><div class="inv-check">✓</div>Plataforma de documentação completa</div>
+        </div>
+        <div class="inv-membership-note">
+          Para ex-alunos que quiserem manter acesso à comunidade, capacitações mensais e mentorias, existe o Membership pós-programa. Mais detalhes no encerramento.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ PERFIL ═════ -->
+<section class="s s-dark">
+  <div class="two-col" style="align-items:start">
+    <div>
+      <div class="eyebrow">Perfil do participante</div>
+      <h2 class="display">Para quem<br><em>é o programa.</em></h2>
+      <p class="body-text" style="margin-top:28px">O cohort é composto por empresários e sócios-fundadores com operações estabelecidas. A curadoria da turma é parte do valor — empresas de setores complementares, com substância para construir posicionamento real.</p>
+    </div>
+    <div>
+      <div class="specs-block" style="margin-top:0">
+        <div class="spec-row">
+          <span class="spec-k">Faturamento</span>
+          <span class="spec-v">R$ 10M+ / ano</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Perfil</span>
+          <span class="spec-v">Fundador, sócio ou CEO</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Time mínimo</span>
+          <span class="spec-v">1 pessoa de marketing</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Setores</span>
+          <span class="spec-v">Curadoria por complementaridade</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Vagas por turma</span>
+          <span class="spec-v">30 empresas</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-k">Processo</span>
+          <span class="spec-v">Candidatura + call de qualificação</span>
+        </div>
+      </div>
+      <div style="margin-top:24px; padding: 20px 22px; border: 1px solid rgba(242,239,233,0.08); border-left: 2px solid rgba(242,239,233,0.25);">
+        <p style="font-size:13px; font-weight:300; color:rgba(242,239,233,0.4); line-height:1.8;">O critério de seleção não é só faturamento. O programa funciona quando o empresário tem algo real a dizer sobre o seu mercado — e está disposto a dizê-lo com consistência.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ FAQ ═════ -->
+<section class="s s-mid">
+  <div class="faq-layout">
+    <div>
+      <h2 class="faq-side-title">Perguntas<br><em>comuns.</em></h2>
+      <p class="faq-side-body" style="margin-top:16px">O que mais aparece nas calls de candidatura.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open"><button class="faq-q">É necessária experiência prévia com redes sociais? <span class="faq-plus">+</span></button><div class="faq-a">Não. O programa parte do diagnóstico e constrói o posicionamento desde a base. O método da Blank estrutura o que já existe — histórico, decisões, visão de mercado — e transforma em sistema operacional. Experiência anterior não é critério de seleção.</div></div>
+      <div class="faq-item"><button class="faq-q">Quem da empresa precisa participar? <span class="faq-plus">+</span></button><div class="faq-a">O empresário e ao menos uma pessoa responsável pela execução de marketing — analista, coordenador ou social media. O time participa das mentorias operacionais; o empresário, das sessões estratégicas e com conselheiros. O restante do programa opera sem demandar a agenda executiva.</div></div>
+      <div class="faq-item"><button class="faq-q">Qual a demanda de tempo para o empresário? <span class="faq-plus">+</span></button><div class="faq-a">O mês 1 requer aproximadamente 3 horas para as sessões de onboarding e validação do plano. Do mês 2 ao 4, o empresário participa de 1 mentoria estratégica por mês, 2 revisões 1:1 ao longo do programa, sessões abertas com conselheiros, e o encontro presencial no mês 3. O restante é conduzido pelo time.</div></div>
+      <div class="faq-item"><button class="faq-q">Como funciona a trilha coletiva? <span class="faq-plus">+</span></button><div class="faq-a">As 30 empresas do cohort têm acesso a um ambiente comum para troca de feedback, análise de resultados e colaborações de conteúdo. As sessões com conselheiros são abertas para perguntas da turma. O encontro presencial no mês 3 reúne todos os participantes para análise coletiva e produção ao vivo.</div></div>
+      <div class="faq-item"><button class="faq-q">O que ocorre ao término dos 4 meses? <span class="faq-plus">+</span></button><div class="faq-a">O time está treinado, o plano está documentado e a operação está rodando de forma autônoma. O encerramento formal inclui a call de internalização de 3h e a entrega da documentação completa. O Membership pós-programa é uma opção de continuidade sem contrato mínimo.</div></div>
+      <div class="faq-item"><button class="faq-q">Como é o processo de seleção? <span class="faq-plus">+</span></button><div class="faq-a">O processo tem duas etapas: candidatura online seguida de uma call de qualificação. Os critérios objetivos são faturamento acima de R$10M e presença de ao menos um profissional de marketing na equipe. O cohort é composto por empresas de setores complementares — o perfil do conjunto é considerado na seleção.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ CLOSE ═════ -->
+<section class="close-section">
+  <!-- Mini echo -->
+  <svg class="close-echo" viewBox="0 0 800 600" preserveAspectRatio="xMaxYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="760" cy="300" r="80" fill="none" stroke="#F2EFE9" stroke-width=".5" opacity=".08"/>
+    <circle cx="760" cy="300" r="150" fill="none" stroke="#F2EFE9" stroke-width=".4" opacity=".06"/>
+    <circle cx="760" cy="300" r="250" fill="none" stroke="#F2EFE9" stroke-width=".3" opacity=".04"/>
+    <circle cx="760" cy="300" r="380" fill="none" stroke="#F2EFE9" stroke-width=".2" opacity=".03"/>
+  </svg>
+  <div class="close-left">
+    <h2 class="close-title">
+      Marca pessoal<br>
+      <em>como canal.</em>
+    </h2>
+    <p class="close-sub" style="margin-top:28px">O Influentes é um programa de 4 meses para empresários que entendem que a sua presença é um ativo — e querem construir com método, não com sorte. 30 vagas. Turma I.</p>
+  </div>
+  <div class="close-right">
+    <div class="close-card">
+      <div class="close-card-inner">
+        <div class="close-card-label">Resumo</div>
+        <div class="close-specs">
+          <div class="close-spec"><span class="close-spec-k">Diagnóstico e plano estratégico</span><span class="close-spec-v">✓</span></div>
+          <div class="close-spec"><span class="close-spec-k">8 roteiros base pela Blank</span><span class="close-spec-v">✓</span></div>
+          <div class="close-spec"><span class="close-spec-k">Ciclo quinzenal de mentorias</span><span class="close-spec-v">✓</span></div>
+          <div class="close-spec"><span class="close-spec-k">Account manager dedicado</span><span class="close-spec-v">4 meses</span></div>
+          <div class="close-spec"><span class="close-spec-k">Sessões com conselheiros</span><span class="close-spec-v">2 de 3</span></div>
+          <div class="close-spec"><span class="close-spec-k">Encontro presencial</span><span class="close-spec-v">Mês 3</span></div>
+          <div class="close-spec"><span class="close-spec-k">Call de internalização</span><span class="close-spec-v">3h · Mês 4</span></div>
+        </div>
+      </div>
+      <div class="close-card-foot">
+        <a href="#" class="btn-close">Candidatura</a>
+        <div class="close-terms">Entrada por candidatura · 30 vagas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-brand">
+    <svg viewBox="0 0 2851 709" xmlns="http://www.w3.org/2000/svg">
+      <path d="M308.864 54.5113C308.864 49.5075 301.908 48.2814 300.185 52.9869C285.113 93.9116 270.869 141.563 207.268 201.807C204.684 204.259 200.344 201.608 200.344 198.062V15.5748C200.344 10.8693 193.52 9.11306 191.897 13.5203C167.848 78.0389 100.934 166.383 4.27322 196.406C1.98754 197.102 0 198.46 0 200.879V654.066C0 659.07 6.9564 660.296 8.67894 655.591C23.7511 614.666 57.44 535.567 101.597 506.771C104.578 504.815 108.52 506.969 108.52 510.515V693.003C108.52 697.708 115.211 699.398 116.967 695.057C144.958 625.237 197.297 551.672 304.591 512.172C306.844 511.344 308.864 510.117 308.864 507.698V54.5113Z" fill="currentColor"/><path d="M452.828 692.771V678.091C487.246 676.401 511.56 670.502 525.738 660.362C539.916 650.222 547.005 629.644 547.005 598.594V93.1824C547.005 62.7954 539.816 42.5484 525.506 32.4084C511.163 22.2683 486.948 16.3699 452.861 14.6798V0H735.854C811.447 0 870.775 14.5142 913.806 43.5425C956.836 72.5709 978.335 112.767 978.335 164.063C978.335 206.612 963.826 242.466 934.807 271.694C905.789 300.888 865.442 319.875 813.832 328.657C880.316 336.08 932.555 355.829 970.517 387.906C1008.48 419.983 1027.46 459.649 1027.46 506.903C1027.46 564.297 1005.6 609.629 961.904 642.866C918.211 676.136 858.386 692.737 782.462 692.737H452.894L452.828 692.771Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="f-copy">© 2025 Blank. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+// Month tabs
+document.querySelectorAll('.m-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const m = btn.dataset.m;
+    document.querySelectorAll('.m-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.m-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector(`.m-panel[data-p="${m}"]`).classList.add('active');
+  });
+});
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!open) item.classList.add('open');
+  });
+});
+
+// Scroll reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const d = parseInt(e.target.dataset.delay || 0);
+      setTimeout(() => e.target.classList.add('in'), d);
+    }
+  });
+}, { threshold: 0.05 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.p-card, .fac-card, .proof-card, .inv, .canal-item').forEach((el, i) => {
+  el.classList.add('reveal');
+  el.dataset.delay = (i % 4) * 70;
+  io.observe(el);
+});
+</script>
+</body>
+</html>
